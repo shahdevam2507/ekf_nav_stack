@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="my_robot">
+
+    <!-- ── Global properties — change here, updates everywhere ── -->
+    <xacro:property name="chassis_length" value="0.3"/>
+    <xacro:property name="chassis_width"  value="0.2"/>
+    <xacro:property name="chassis_height" value="0.08"/>
+    <xacro:property name="chassis_mass"   value="1.5"/>
+
+    <xacro:property name="wheel_radius"   value="0.05"/>
+    <xacro:property name="wheel_width"    value="0.04"/>
+    <xacro:property name="wheel_mass"     value="0.3"/>
+    <xacro:property name="wheel_sep"      value="0.28"/>
+    <xacro:property name="wheelbase"      value="0.2"/>
+
+    <!-- Include sub-files -->
+    <xacro:include filename="$(find my_robot_description)/urdf/robot_base.xacro"/>
+    <xacro:include filename="$(find my_robot_description)/urdf/robot_wheels.xacro"/>
+    <xacro:include filename="$(find my_robot_description)/urdf/robot_sensors.xacro"/>
+    <xacro:include filename="$(find my_robot_description)/urdf/gz_plugins.xacro"/>
+
+    <!-- Instantiate everything -->
+    <xacro:robot_base/>
+
+    <!-- 4-wheel skid steer -->
+    <xacro:robot_wheel side="left_front"  y_offset="${wheel_sep/2}"  x_offset="${wheelbase/2}"/>
+    <xacro:robot_wheel side="left_back"   y_offset="${wheel_sep/2}"  x_offset="${-wheelbase/2}"/>
+    <xacro:robot_wheel side="right_front" y_offset="${-wheel_sep/2}" x_offset="${wheelbase/2}"/>
+    <xacro:robot_wheel side="right_back"  y_offset="${-wheel_sep/2}" x_offset="${-wheelbase/2}"/>
+
+    <xacro:lidar_sensor/>
+    <xacro:sensor_plugins/>
+
+</robot>

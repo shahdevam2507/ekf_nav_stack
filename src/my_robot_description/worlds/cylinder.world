@@ -1,0 +1,350 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <world name="cylinder_test">
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+    <physics type="ode">
+      <real_time_update_rate>1000</real_time_update_rate>
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+    </physics>
+    <!-- ── Outer boundary (flat walls — same as training) ── -->
+    <model name="wall_north">
+      <static>true</static>
+      <pose>0 8 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry>
+            <box>
+              <size>16 0.2 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>16 0.2 1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.9 0.9 0.9 1</ambient>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="wall_south">
+      <static>true</static>
+      <pose>0 -8 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry>
+            <box>
+              <size>16 0.2 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>16 0.2 1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.9 0.9 0.9 1</ambient>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="wall_east">
+      <static>true</static>
+      <pose>8 0 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry>
+            <box>
+              <size>0.2 16 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.2 16 1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.9 0.9 0.9 1</ambient>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="wall_west">
+      <static>true</static>
+      <pose>-8 0 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry>
+            <box>
+              <size>0.2 16 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box>
+              <size>0.2 16 1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.9 0.9 0.9 1</ambient>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <!-- ── Cylindrical obstacles (unseen during training) ── -->
+    <model name="cyl_1">
+      <static>true</static>
+      <pose>2 2 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry>
+            <cylinder>
+              <radius>0.3</radius>
+              <length>1.0</length>
+            </cylinder>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <cylinder>
+              <radius>0.3</radius>
+              <length>1.0</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.8 0.2 0.2 1</ambient>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="cyl_2">
+      <static>true</static>
+      <pose>-2 3 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry>
+            <cylinder>
+              <radius>0.4</radius>
+              <length>1.0</length>
+            </cylinder>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <cylinder>
+              <radius>0.4</radius>
+              <length>1.0</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.8 0.2 0.2 1</ambient>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="cyl_3">
+      <static>true</static>
+      <pose>4 -2 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry>
+            <cylinder>
+              <radius>0.35</radius>
+              <length>1.0</length>
+            </cylinder>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <cylinder>
+              <radius>0.35</radius>
+              <length>1.0</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.8 0.2 0.2 1</ambient>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="cyl_4">
+      <static>true</static>
+      <pose>-3 -2 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry>
+            <cylinder>
+              <radius>0.3</radius>
+              <length>1.0</length>
+            </cylinder>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <cylinder>
+              <radius>0.3</radius>
+              <length>1.0</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.8 0.2 0.2 1</ambient>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="cyl_5">
+      <static>true</static>
+      <pose>0 -4 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry>
+            <cylinder>
+              <radius>0.45</radius>
+              <length>1.0</length>
+            </cylinder>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <cylinder>
+              <radius>0.45</radius>
+              <length>1.0</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.8 0.2 0.2 1</ambient>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="cyl_6">
+      <static>true</static>
+      <pose>-5 1 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry>
+            <cylinder>
+              <radius>0.3</radius>
+              <length>1.0</length>
+            </cylinder>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <cylinder>
+              <radius>0.3</radius>
+              <length>1.0</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.8 0.2 0.2 1</ambient>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="cyl_7">
+      <static>true</static>
+      <pose>5 4 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry>
+            <cylinder>
+              <radius>0.35</radius>
+              <length>1.0</length>
+            </cylinder>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <cylinder>
+              <radius>0.35</radius>
+              <length>1.0</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.8 0.2 0.2 1</ambient>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="cyl_8">
+      <static>true</static>
+      <pose>1 6 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry>
+            <cylinder>
+              <radius>0.3</radius>
+              <length>1.0</length>
+            </cylinder>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <cylinder>
+              <radius>0.3</radius>
+              <length>1.0</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.8 0.2 0.2 1</ambient>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <!-- ── Goal marker at (5, 5) — visual only, no collision ── -->
+    <!-- Green cylinder on ground marks the goal location -->
+    <model name="goal_marker">
+      <static>true</static>
+      <pose>5 5 0.02 0 0 0</pose>
+      <link name="link">
+        <!-- No collision — robot can drive over it -->
+        <visual name="vis">
+          <geometry>
+            <cylinder>
+              <radius>0.4</radius>
+              <length>0.04</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.0 1.0 0.0 1</ambient>
+            <diffuse>0.0 1.0 0.0 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <!-- Goal pole — tall thin green pole so visible from far -->
+    <model name="goal_pole">
+      <static>true</static>
+      <pose>5 5 0.75 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry>
+            <cylinder>
+              <radius>0.05</radius>
+              <length>1.5</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.0 1.0 0.0 1</ambient>
+            <diffuse>0.0 1.0 0.0 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+  </world>
+</sdf>

@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<xacro:macro name="sensor_plugins">
+
+  <!-- ── Differential drive plugin (4-wheel skid steer) ── -->
+  <gazebo>
+    <plugin name="differential_drive_controller"
+            filename="libgazebo_ros_diff_drive.so">
+
+      <update_rate>30.0</update_rate>
+      <num_wheel_pairs>2</num_wheel_pairs>
+
+      <!-- Pair 1: front wheels -->
+      <left_joint>left_front_wheel_joint</left_joint>
+      <right_joint>right_front_wheel_joint</right_joint>
+
+      <!-- Pair 2: rear wheels -->
+      <left_joint>left_back_wheel_joint</left_joint>
+      <right_joint>right_back_wheel_joint</right_joint>
+
+      <!-- Artificially increased wheel_separation to force the plugin to apply massive turning speed differences (vital for Gazebo skid-steer) -->
+      <wheel_separation>1.0</wheel_separation>
+      <wheel_diameter>${2*wheel_radius}</wheel_diameter>
+      <max_wheel_torque>200</max_wheel_torque>
+      <max_wheel_accel>10.0</max_wheel_accel>
+
+      <command_topic>cmd_vel</command_topic>
+      <odometry_topic>odom</odometry_topic>
+      <odometry_frame>odom</odometry_frame>
+      <robot_base_frame>base_link</robot_base_frame>
+
+      <publish_odom>true</publish_odom>
+      <publish_odom_tf>true</publish_odom_tf>
+      <publish_wheel_tf>true</publish_wheel_tf>
+    </plugin>
+  </gazebo>
+
+  <!-- ── Joint state publisher plugin ── -->
+  <gazebo>
+    <plugin name="joint_state_publisher"
+            filename="libgazebo_ros_joint_state_publisher.so">
+      <joint_name>left_front_wheel_joint</joint_name>
+      <joint_name>left_back_wheel_joint</joint_name>
+      <joint_name>right_front_wheel_joint</joint_name>
+      <joint_name>right_back_wheel_joint</joint_name>
+      <update_rate>30</update_rate>
+    </plugin>
+  </gazebo>
+
+  <!-- ── LIDAR sensor plugin ── -->
+  <gazebo reference="lidar_link">
+    <sensor type="ray" name="lidar_sensor">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>true</visualize>
+      <update_rate>30</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>360</samples>
+            <resolution>1</resolution>
+            <min_angle>-3.14159265</min_angle>
+            <max_angle> 3.14159265</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.10</min>
+          <max>5.0</max>
+          <resolution>0.01</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </ray>
+      <plugin name="gazebo_ros_lidar"
+              filename="libgazebo_ros_ray_sensor.so">
+        <ros>
+          <remapping>~/out:=scan</remapping>
+        </ros>
+        <output_type>sensor_msgs/LaserScan</output_type>
+        <frame_name>lidar_link</frame_name>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+</xacro:macro>
+</robot>

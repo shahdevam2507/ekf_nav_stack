@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <world name="room">
+    <include><uri>model://sun</uri></include>
+    <include><uri>model://ground_plane</uri></include>
+    <physics type="ode">
+      <real_time_update_rate>1000</real_time_update_rate>
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+    </physics>
+
+    <!-- Outer walls -->
+    <model name="wall_north"><static>true</static><pose>0 5 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>10 0.2 1</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>10 0.2 1</size></box></geometry>
+        <material><ambient>0.8 0.8 0.8 1</ambient></material></visual>
+      </link></model>
+
+    <model name="wall_south"><static>true</static><pose>0 -5 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>10 0.2 1</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>10 0.2 1</size></box></geometry>
+        <material><ambient>0.8 0.8 0.8 1</ambient></material></visual>
+      </link></model>
+
+    <model name="wall_east"><static>true</static><pose>5 0 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>0.2 10 1</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>0.2 10 1</size></box></geometry>
+        <material><ambient>0.8 0.8 0.8 1</ambient></material></visual>
+      </link></model>
+
+    <model name="wall_west"><static>true</static><pose>-5 0 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>0.2 10 1</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>0.2 10 1</size></box></geometry>
+        <material><ambient>0.8 0.8 0.8 1</ambient></material></visual>
+      </link></model>
+
+    <!-- Interior pillars -->
+    <model name="pillar_1"><static>true</static><pose>2 2 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>0.5 0.5 1</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>0.5 0.5 1</size></box></geometry>
+        <material><ambient>0.2 0.5 0.8 1</ambient></material></visual>
+      </link></model>
+
+    <model name="pillar_2"><static>true</static><pose>-2 2 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>0.5 0.5 1</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>0.5 0.5 1</size></box></geometry>
+        <material><ambient>0.2 0.5 0.8 1</ambient></material></visual>
+      </link></model>
+
+    <model name="pillar_3"><static>true</static><pose>2 -2 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>0.5 0.5 1</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>0.5 0.5 1</size></box></geometry>
+        <material><ambient>0.2 0.5 0.8 1</ambient></material></visual>
+      </link></model>
+
+    <model name="pillar_4"><static>true</static><pose>-2 -2 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>0.5 0.5 1</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>0.5 0.5 1</size></box></geometry>
+        <material><ambient>0.2 0.5 0.8 1</ambient></material></visual>
+      </link></model>
+
+    <model name="divider"><static>true</static><pose>0 1.5 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>3 0.2 1</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>3 0.2 1</size></box></geometry>
+        <material><ambient>0.8 0.4 0.2 1</ambient></material></visual>
+      </link></model>
+
+  </world>
+</sdf>
