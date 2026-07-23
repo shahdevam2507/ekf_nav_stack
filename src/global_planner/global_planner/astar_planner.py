@@ -19,7 +19,7 @@ class AStarPlanner(Node):
         self.map_length = 20.0
         self.width = int(self.map_width/self.resolution)
         self.height = int(self.map_length/self.resolution)
-        self.robot_radius = 0.15 
+        self.robot_radius = 0.30 
         
         self.grid = [[0 for _ in range(self.width)] for _ in range(self.height)]
         self.landmarks = []
