@@ -93,7 +93,7 @@ class ekflocnode(Node):
         self.new_landmarks     = []
         
         # Determine latest map file or use a specific one
-        save_dir = "/home/rover/custom_nav_stack/src/saved_maps"
+        save_dir = "/home/jival/ekf_nav_stack/src/saved_maps"
         map_id = 1
         while os.path.exists(os.path.join(save_dir, f"saved_map_{map_id+1}.yaml")):
             map_id += 1
@@ -577,7 +577,7 @@ class ekflocnode(Node):
         
         try:
             # Determine save directory
-            save_dir = "/home/rover/custom_nav_stack/src/saved_maps"
+            save_dir = "/home/jival/ekf_nav_stack/src/saved_maps"
             os.makedirs(save_dir, exist_ok=True)
             
             # Find next available ID

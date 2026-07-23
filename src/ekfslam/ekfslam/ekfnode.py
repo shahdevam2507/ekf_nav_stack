@@ -543,7 +543,7 @@ class ekfnode(Node):
         
         try:
             # Determine save directory
-            save_dir = "/home/rover/custom_nav_stack/src/saved_maps"
+            save_dir = "/home/jival/ekf_nav_stack/src/saved_maps"
             os.makedirs(save_dir, exist_ok=True)
             
             # Find next available ID

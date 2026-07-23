@@ -12,15 +12,13 @@ class AStarPlanner(Node):
     def __init__(self):
         super().__init__('astar_planner')
         
-        # Grid settings
-        self.resolution = 0.025 # 2.5 cm per cell
+        self.resolution = 0.025 
         self.origin_x = -10.0
         self.origin_y = -10.0
-        self.width = 800 # 20m wide
-        self.height = 800 # 20m high
-        
-        # The inflation radius ensures the robot won't clip the cylinders.
-        # Reduced to 0.15m for tight topological planning (CBF will handle exact collision avoidance).
+        self.map_width = 20.0
+        self.map_length = 20.0
+        self.width = int(self.map_width/self.resolution)
+        self.height = int(self.map_length/self.resolution)
         self.robot_radius = 0.15 
         
         self.grid = [[0 for _ in range(self.width)] for _ in range(self.height)]
@@ -38,12 +36,10 @@ class AStarPlanner(Node):
         self.load_map()
         self.build_costmap()
         
-        # Publish costmap periodically so RViz can display the inflated obstacles
         self.timer = self.create_timer(1.0, self.publish_costmap)
         
     def load_map(self):
-        # find map
-        save_dir = "/home/rover/custom_nav_stack/src/saved_maps"
+        save_dir = "/home/jival/ekf_nav_stack/src/saved_maps"
         map_id = 1
         while os.path.exists(os.path.join(save_dir, f"saved_map_{map_id+1}.yaml")):
             map_id += 1
@@ -66,17 +62,15 @@ class AStarPlanner(Node):
                 for lm in self.landmarks:
                     lx = lm['position']['x']
                     ly = lm['position']['y']
-                    # We default to 0.3 if radius is missing in legacy maps
-                    lr = lm['position'].get('r', 0.3) 
+                    lr = lm['position'].get('r', 0.3) # default radius is 0.3 if the radius is not included as a variable state 
                     
                     dist = math.sqrt((wx - lx)**2 + (wy - ly)**2)
-                    # If distance to center is less than cylinder radius + robot radius
                     if dist <= (lr + self.robot_radius):
                         occupied = True
                         break
                         
                 if occupied:
-                    self.grid[y][x] = 100 # 100 means definitely occupied in standard OccupancyGrid
+                    self.grid[y][x] = 100 #(black cells)
                 else:
                     self.grid[y][x] = 0
                     
@@ -90,17 +84,15 @@ class AStarPlanner(Node):
         msg.info.origin.position.x = self.origin_x
         msg.info.origin.position.y = self.origin_y
         
-        # Flatten grid for 1D array message format
         flat_grid = []
         for y in range(self.height):
             for x in range(self.width):
-                flat_grid.append(self.grid[y][x])
+                flat_grid.append(self.grid[y][x]) # 2d to 1d to assign the occupancy to the cells easily
                 
         msg.data = flat_grid
         self.map_pub.publish(msg)
         
     def pose_callback(self, msg):
-        # Update current pose from EKF
         self.current_pose = (msg.pose.pose.position.x, msg.pose.pose.position.y)
         
     def world_to_grid(self, x, y):
@@ -141,7 +133,7 @@ class AStarPlanner(Node):
             self.get_logger().warn("Goal is inside an obstacle! Please pick a valid point.")
             return
             
-        # Standard A* Search
+        #A* Search
         frontier = []
         heapq.heappush(frontier, (0, start_grid))
         came_from = {}

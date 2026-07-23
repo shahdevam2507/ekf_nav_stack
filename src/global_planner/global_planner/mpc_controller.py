@@ -19,22 +19,20 @@ def wrap_angle(a):
 
 class ReferencePath:
     def __init__(self, waypoints_xy: np.ndarray):
-        # Robust downsampling to ~10cm spacing for stable spline fitting
         pts_list = [waypoints_xy[0]]
         for pt in waypoints_xy[1:]:
             if np.hypot(pt[0] - pts_list[-1][0], pt[1] - pts_list[-1][1]) > 0.1:
                 pts_list.append(pt)
-        pts_list.append(waypoints_xy[-1]) # always keep the exact goal
+        pts_list.append(waypoints_xy[-1])
         pts = np.array(pts_list)
 
-        # Need at least 4 points for a cubic spline
         if len(pts) < 4:
             if len(pts) == 0:
                 pts = np.array([[0,0], [1,0], [2,0], [3,0]])
             while len(pts) < 4:
                 pts = np.vstack((pts, pts[-1] + [0.01, 0.01]))
 
-        # Fit a standard non-periodic spline (s=0.0 forces strict interpolation)
+        #cubic regression  for proper pos, vel and acceleration continuity  
         tck, _ = splprep([pts[:, 0], pts[:, 1]], s=0.0, k=3)
         u_fine = np.linspace(0, 1, max(100, len(pts)*10))
         x_fine, y_fine = splev(u_fine, tck)
@@ -170,19 +168,14 @@ class BasicMPCNode(Node):
 
         self.ref_path = None
         self.solver = None
-        self.ego_state = None
+        self.bot_state = None
         self.s_progress = 0.0
         self._s_initialized = False
         self.final_goal_yaw = None
 
-        # Subscribes to accurate SLAM position
         self.create_subscription(PoseWithCovarianceStamped, '/filtered_odom', self._odom_cb, 10)
-        # Subscribes to A* generated path
         self.create_subscription(Path, '/planned_path', self._path_cb, 10)
-
-        # Publishes velocity commands
         self.cmd_pub = self.create_publisher(Twist, '/cmd_vel', 10)
-
         self.create_timer(1.0 / rate, self._control_tick)
         self.get_logger().info('MPC node started. Awaiting A* /planned_path...')
 
@@ -198,7 +191,7 @@ class BasicMPCNode(Node):
         self.ref_path = ReferencePath(waypoints)
         self.solver = BasicMPCSolver(self.ref_path, N=self.N, dt=self.dt)
         
-        # Reset MPC tracking states on new path
+
         self.solver.u_prev = None
         self._s_initialized = False
         self.s_progress = 0.0
@@ -209,14 +202,14 @@ class BasicMPCNode(Node):
         p = msg.pose.pose.position
         q = msg.pose.pose.orientation
         yaw = quat_to_yaw(q)
-        # Initialize ego_state: [x, y, th, v, w]
-        self.ego_state = np.array([p.x, p.y, yaw, 0.0, 0.0])
+        # Initialize state: [x, y, th, v, w]
+        self.bot_state = np.array([p.x, p.y, yaw, 0.0, 0.0])
 
     def _control_tick(self):
-        if self.ref_path is None or self.solver is None or self.ego_state is None:
+        if self.ref_path is None or self.solver is None or self.bot_state is None:
             return
 
-        x, y, th, v, w = self.ego_state
+        x, y, th, v, w = self.bot_state
 
         if not self._s_initialized:
             self.s_progress = self.ref_path.find_closest_s(x, y, 0.0, window=self.ref_path.total_length, n_samples=100)
@@ -224,13 +217,11 @@ class BasicMPCNode(Node):
         else:
             self.s_progress = self.ref_path.find_closest_s(x, y, self.s_progress, window=2.0)
 
-        # Stop command if we've reached the end of the trajectory
         dist_to_end = self.ref_path.total_length - self.s_progress
         if dist_to_end < 0.15:
-            # Reached goal position, now turn to align with goal orientation
             if self.final_goal_yaw is not None:
                 yaw_error = wrap_angle(self.final_goal_yaw - th)
-                if abs(yaw_error) > 0.05: # roughly 3 degrees tolerance
+                if abs(yaw_error) > 0.05:
                     cmd = Twist()
                     cmd.angular.z = np.clip(1.5 * yaw_error, -self.solver.w_max, self.solver.w_max)
                     self.cmd_pub.publish(cmd)
@@ -238,26 +229,22 @@ class BasicMPCNode(Node):
                     
             cmd = Twist()
             self.cmd_pub.publish(cmd)
-            self.ref_path = None # Clear path so we don't keep tracking
+            self.ref_path = None 
             self.get_logger().info('Goal reached and aligned! Awaiting new path.')
             return
-
-        # State Machine: If heading error is huge, turn in place before launching MPC
-        # This prevents SLSQP from falling into a v=0 local minimum
         _, _, path_yaw, _ = self.solver.get_reference_trajectory(self.s_progress)[0]
         initial_yaw_err = wrap_angle(path_yaw - th)
         
-        if abs(initial_yaw_err) > math.pi / 4.0: # 45 degrees
+        if abs(initial_yaw_err) > math.pi / 4.0: 
             cmd = Twist()
             cmd.angular.z = np.clip(1.5 * initial_yaw_err, -self.solver.w_max, self.solver.w_max)
             self.cmd_pub.publish(cmd)
-            self.solver.u_prev = None # Reset MPC guess
+            self.solver.u_prev = None 
             return
 
         state = np.array([x, y, th, v, w, self.s_progress])
         v_cmd, w_cmd = self.solver.solve(state)
         
-        # Log to terminal so we can guarantee the solver is outputting a command!
         self.get_logger().info(f"MPC Command -> v: {v_cmd:.2f}, w: {w_cmd:.2f} | Progress: {self.s_progress:.2f}/{self.ref_path.total_length:.2f}m")
 
         cmd = Twist()
