@@ -186,7 +186,7 @@ class ekfnode(Node):
         self.Gt_matrix = np.eye(self.dimension)
         self.Gt_matrix[0:3, 0:3] = Gtx
 
-    def control_covar_matrix(self):
+    def control_covar_matrix(self): #the jacobian of the motion model with respect to the control, used in noise compensation
         if self.state_matrix is None:
             return
 
@@ -219,7 +219,7 @@ class ekfnode(Node):
         n = len(msg.ranges)
         self.scan = [0.0] * n   
         self.diff = [0.0] * n   
-
+        # spatial gradient for 2d lidar for edge detection
         for i in range(n):
             if m.isinf(msg.ranges[i]) or m.isnan(msg.ranges[i]):
                 self.scan[i] = 5.0
@@ -269,15 +269,14 @@ class ekfnode(Node):
             elif self.diff[j] > 0 and obj_detected == 1:
                 obj_detected = 0
                 if indices > 0:
-                    # Dynamically calculate true geometric angle base on incoming topic metadata
+                    # calculate true geometric angle base on incoming topic metadata
                     avg_idx = add_index / indices
                     mean_angle = norm_angle(self.angle_min + (avg_idx * self.angle_increment))
                     mean_range = add_ranges / indices
                     
-                    # The total angle spanned by the cluster
                     theta_span = indices * self.angle_increment
                     
-                    # Exact geometric radius calculation from tangents: sin(theta/2) = R / (D_min + R)
+                    #geometric radius calculation from tangents: sin(theta/2) = R / (D_min + R)
                     sin_half_theta = m.sin(theta_span / 2.0)
                     
                     if 0.0 < sin_half_theta < 0.99:
@@ -287,11 +286,9 @@ class ekfnode(Node):
                         
                     # Calculate approximated arc width for wall filtering
                     width = mean_range * theta_span
-                    
-                    # A cylinder has a width between 0.2 and 1.2 meters. 
-                    # Walls will be much larger.
+
+                    #hardcoded to avoid wall landmark marking 
                     if 0.1 < min_range < 5.0 and 0.2 < width < 1.2:
-                        # Bound the radius loosely to filter out mathematically erratic calculations on noisy borders
                         estimated_radius = min(max(exact_radius, 0.2), 0.6)
                         
                         lidar_range.append(min_range + estimated_radius)
@@ -436,7 +433,7 @@ class ekfnode(Node):
             if q < 1e-5:
                 continue
 
-            # Expected measurement h calculation computed fresh
+            #prediction of the range and the bearing
             pred_r = sqrt_q
             pred_phi = norm_angle(m.atan2(del_y, del_x) - robot_theta)
             h = np.array([[pred_r], [pred_phi], [landmark_r]])

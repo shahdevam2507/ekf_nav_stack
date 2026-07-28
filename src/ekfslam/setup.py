@@ -28,6 +28,7 @@ setup(
             'ekfviz = ekfslam.ekfviz:main',
             'ekflocnode = ekfslam.ekflocnode:main',
             'ekflocviz = ekfslam.ekflocviz:main',
+            'teleop = ekfslam.teleop:main'
         ],
     },
 )
