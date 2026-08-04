@@ -26,6 +26,7 @@ setup(
         'console_scripts': [
             'astar_planner = global_planner.astar_planner:main',
             'mpc_controller = global_planner.mpc_controller:main',
+            'mpc_casadi = global_planner.mpc_casadi:main'
         ],
     },
 )
