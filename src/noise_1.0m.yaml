@@ -1,0 +1,21 @@
+R_sensor_diag:
+- 1.249e-05
+- 3.901e-05
+- 4.996e-05
+angular:
+  increment_rad: 0.012491
+  sigma_phi_rad: 0.006246
+  var_phi_rad2: 3.901e-05
+lidar_model: LD19
+note: "R_sensor = np.diag(R_sensor_diag) \u2014 paste into correction_step(). Characterize\
+  \ at your typical operating range (0.5\u20133 m)."
+radius_landmark:
+  sigma_radius_m: 0.007068
+  var_radius_m2: 4.996e-05
+range:
+  max_m: 1.035
+  mean_m: 1.025085
+  min_m: 1.021
+  std_m: 0.003534
+  var_m2: 1.249e-05
+samples: 3000

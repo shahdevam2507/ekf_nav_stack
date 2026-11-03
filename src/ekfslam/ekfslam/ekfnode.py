@@ -411,7 +411,9 @@ class ekfnode(Node):
         if not hasattr(self, 'matched_landmarks') or not self.matched_landmarks:
             return
 
-        R_sensor = np.diag([0.05**2, 0.02**2, 0.05**2])
+        # Calibrated measurement noise covariance for LD19 under motion:
+        # [sigma_r^2 (range), sigma_phi^2 (bearing), sigma_radius^2 (cylinder radius)]
+        R_sensor = np.diag([5.0e-05, 1.5e-04, 2.0e-04])
 
         # Loop observations sequentially
         for obs_idx, landmark_idx in self.matched_landmarks:
